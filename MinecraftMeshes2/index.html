@@ -29,6 +29,7 @@
     <script src="js/stupid.js"></script>
     <script src="js/culled.js"></script>
     <script src="js/greedy.js"></script>
+    <script src="js/greedy_once.js"></script>
     <script src="js/monotone.js"></script>
 
     <script src="js/testdata.js"></script>
@@ -71,6 +72,9 @@
 		    'Stupid': StupidMesh
 		  , 'Culled': CulledMesh
 		  , 'Greedy': GreedyMesh
+		  , 'Greedy X': GreedyX
+		  , 'Greedy Y': GreedyY
+		  , 'Greedy Z': GreedyZ
 		  , 'Monotone': MonotoneMesh
 		};
 		var testdata = {};
@@ -78,9 +82,9 @@
 		const rgb = (color) => {
             const r = (color & 0xff0000) >> 16
             const g = (color & 0x00ff00) >> 8
-            const b = color & 0x0000ff 
+            const b =  color & 0x0000ff 
             return [r, g, b]
-            return [r/255, g/255, b/255]
+            // return [r/255, g/255, b/255]
         }
 		
 		function updateMesh() {
