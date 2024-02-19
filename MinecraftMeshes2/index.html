@@ -66,7 +66,7 @@
 
 		var stats, scene, renderer, composer;
 		var camera, cameraControl;
-		var geometry, surfacemesh, wiremesh;
+		var geometry, surfacemesh, wiremesh, LineGeometryClass, axes;
 		var meshers = {
 		    'Stupid': StupidMesh
 		  , 'Culled': CulledMesh
@@ -87,6 +87,8 @@
 		
 		  scene.remove( surfacemesh );
 		  scene.remove( wiremesh );
+		//   camera.position.set(data.dims[0]/2, data.dims[1]/2, data.dims[2]/2)
+			
 		  
 			geometry	= new THREE.BufferGeometry();		
 		  var mesher = meshers[ document.getElementById("mesher").value ]
@@ -122,6 +124,7 @@
 
 			normals.push(1, 1, 1 );
           	normals.push(1, 1, 1 );
+			LineGeometryClass = THREE.EdgesGeometry
     //       geometry.faces.push(f);
         } else if(q.length == 4) {
 			indices.push(q[0], q[1], q[2])
@@ -134,6 +137,7 @@
             pcolors.push(...c)
 
 			normals.push(1, 1, 1 );
+			LineGeometryClass = THREE.WireframeGeometry
     //       geometry.faces.push(f);
         }
       }
@@ -175,11 +179,16 @@
 			});
 			surfacemesh	= new THREE.Mesh( geometry, material );
 			surfacemesh.doubleSided = false;
-	// 		var wirematerial = new THREE.MeshBasicMaterial({
-	// 		    color : 0xffffff
-	// 		  , wireframe : true
-	// 		});
+			// var wirematerial = new THREE.MeshBasicMaterial({
+			//     color : 0xffffff
+			//   , wireframe : true
+			// });
 	// 		wiremesh = new THREE.Mesh(geometry, wirematerial);
+			// var egeo = new THREE.EdgesGeometry( geometry ); 
+			// var egeo = new THREE.WireframeGeometry( geometry );
+			var egeo = new LineGeometryClass( geometry );
+			var edgeMaterial = new THREE.LineBasicMaterial( { color: 0xffffff, /*transparent: true, opacity: 0.5,*/ linewidth:2 } );
+        	wiremesh = new THREE.LineSegments(egeo, edgeMaterial);
 	// 		wiremesh.doubleSided = true;
 			
 	// 		wiremesh.position.x = surfacemesh.position.x = -(bb.max.x + bb.min.x) / 2.0;
@@ -187,7 +196,18 @@
     //   wiremesh.position.z = surfacemesh.position.z = -(bb.max.z + bb.min.z) / 2.0;
       
 			scene.add( surfacemesh );
-			// scene.add( wiremesh );
+			scene.add( wiremesh );
+
+		//? axises
+		scene.remove(axes)
+		const [MX,MY,MZ] = data.dims
+        axes = new THREE.AxesHelper( Math.max(MX, MY, MZ)+2 );
+        axes.geometry.translate(-0.015 , -0.015 , -0.015);
+        scene.add(axes);
+
+			cameraControl.target.set(data.dims[0]/2, data.dims[1]/2, data.dims[2]/2)
+		  	cameraControl.update() //controls.update() must be called after any manual changes to the camera's transform
+
 		}
 
 		if( !init() )	animate();
@@ -228,9 +248,9 @@
 
 			// create a camera contol
 			// cameraControls	= new THREE.TrackballControls( camera, document.getElementById('container') )
-			cameraControl	= new TrackballControls( camera, document.getElementById('container') )
-			// cameraControl	= new OrbitControls( camera, renderer.domElement );
-			// cameraControl.addEventListener( 'change', render ); // use only if there is no animation loop
+			// cameraControl	= new TrackballControls( camera, document.getElementById('container') )
+			cameraControl	= new OrbitControls( camera, renderer.domElement );
+			cameraControl.addEventListener( 'change', render ); // use only if there is no animation loop
 			// // cameraControl.minDistance = 1;
 			// // cameraControl.maxDistance = 10;
 			// cameraControl.enablePan = false;
@@ -264,7 +284,15 @@
 			
 			//Update mesh
 			updateMesh();
+
 			
+			const sphereGeometry = new THREE.SphereGeometry(0.25)
+			const material = new THREE.MeshStandardMaterial()
+			const sphere = new THREE.Mesh(sphereGeometry, material)
+			// sphere.position.x = 0
+			scene.add(sphere)
+			
+
 			return false;
 		}
 
@@ -289,7 +317,7 @@
 			var PIseconds	= Date.now() * Math.PI;
 
 			// update camera controls
-			cameraControl.update();
+			// cameraControl.update();
 
       surfacemesh.visible = document.getElementById("showfacets").checked;
     //   wiremesh.visible = document.getElementById("showedges").checked;
