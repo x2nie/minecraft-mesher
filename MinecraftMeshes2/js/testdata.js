@@ -169,7 +169,7 @@ function createTestData() {
   });
   
   result['Checker'] = makeVoxels([0,0,0], [8,8,8], function(i,j,k) {
-    return !!((i+j+k)&1) ? (((i^j^k)&2) ? 1 : 0xffffff) : 0;
+    return !!((i+j+k)&1) ? (((i^j^k)&2) ? 1 : 0xff0000) : 0;
   });
   
   
