@@ -36,7 +36,7 @@ function drawVertices(a) {
         }
         t[i] = JSON.stringify(a[i])
     }
-    console.table(t, ['vertice #', 'x', 'y', 'z'])
+    console.table(t) //, ['vertice #', 'x', 'y', 'z'])
 }
 
 function drawTable(a, x, y) {
@@ -87,16 +87,14 @@ function Greedy(volume, dims, start, finish) {
         // if(mask.length < dims[u] * dims[v]) {
         const mask = new Int32Array(dims[u] * dims[v]);
         // }
-        console.log(`mask: ${dims[u]} x ${dims[v]}`)
+        console.log(`mask: ${dims[u]} x ${dims[v]} / d=${d} / u=${u} / v=${v} /`)
         q[d] = 1;
         for (x[d] = -1; x[d] < dims[d];) {
-            // console.log('x[d]=',x[d])
-            console.log(`%c${X} = ${x[d]}%c`, bold, normal)
             //Compute mask
             var n = 0;
             for     (x[v] = 0; x[v] < dims[v]; ++x[v])
                 for (x[u] = 0; x[u] < dims[u]; ++x[u], ++n) {
-                    var a = (0 <= x[d] ? f(x[0], x[1], x[2]) : 0),
+                    var a = (x[d] >= 0 ? f(x[0], x[1], x[2]) : 0),
                         b = (x[d] < dims[d] - 1 ? f(x[0] + q[0], x[1] + q[1], x[2] + q[2]) : 0);
                     if ((!!a) === (!!b)) {
                         mask[n] = 0;
@@ -106,18 +104,21 @@ function Greedy(volume, dims, start, finish) {
                         mask[n] = -b;
                     }
                 }
+            //Increment x[d]
+            ++x[d];
+            // console.log('x[d]=',x[d])
+            console.log(`%c${X} = ${x[d]}%c   x [ ${x[0]}, ${x[1]}, ${x[2]} ]`, bold, normal)
+            console.log(`         q [ ${q[0]}, ${q[1]}, ${q[2]} ]`)
             drawTable(mask, dims[u], dims[v])
-                //Increment x[d]
-                ++x[d];
             //Generate mesh for mask using lexicographic ordering
             n = 0;
             for     (j = 0; j < dims[v]; ++j)
                 for (i = 0; i < dims[u];) {
                     var c = mask[n];
                     if (!!c) {
-                        //Compute width
+                        //? Compute width ===============================
                         for (w = 1; c === mask[n + w] && i + w < dims[u]; ++w) {}
-                        //Compute height (this is slightly awkward
+                        //? Compute height ------------------------------
                         var done = false;
                         for (h = 1; j + h < dims[v]; ++h) {
                             for (k = 0; k < w; ++k) {
@@ -130,7 +131,7 @@ function Greedy(volume, dims, start, finish) {
                                 break;
                             }
                         }
-                        //Add quad
+                        //? Add quad ###################################
                         x[u] = i;
                         x[v] = j;
                         var du = [0, 0, 0],
@@ -143,6 +144,8 @@ function Greedy(volume, dims, start, finish) {
                             du[v] = h;
                             dv[u] = w;
                         }
+                        console.log(` du = [ ${du[0]}, ${du[1]}, ${du[2]} ]`)
+                        console.log(` dv = [ ${dv[0]}, ${dv[1]}, ${dv[2]} ]`)
                         var vertex_count = vertices.length;
                         var tvertices = []
                         tvertices.push([x[0],             x[1],             x[2]            ]);
@@ -158,7 +161,7 @@ function Greedy(volume, dims, start, finish) {
                         vertices.push(...tvertices)
                         faces.push([vertex_count, vertex_count + 1, vertex_count + 2, vertex_count + 3, c]);
 
-                        //Zero-out mask
+                        //? Zero-out mask. it guarantee that each voxel is scanned only once.
                         for     (l = 0; l < h; ++l)
                             for (k = 0; k < w; ++k) {
                                 mask[n + k + l * dims[u]] = 0;

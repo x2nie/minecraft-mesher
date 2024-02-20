@@ -25,6 +25,14 @@ function createTestData() {
   ];
   
   
+    
+  result['Tiny Button'] = makeVoxels([-1,-1,-1],[1,2,2], function(i,j,k) {
+    if(i === 0) {
+      return (j === 0 && k === 0) ? 0xff0000 : 0;
+    }
+    return 1;
+  });
+  
   
   for(var i=1,c=0; i<=16; i<<=1,++c) {
     result[i + 'x' + i + 'x' + i] = makeVoxels([0,0,0], [i,i,i], function() { return colorTab[c]; });
@@ -41,13 +49,7 @@ function createTestData() {
     }
     return 1;
   });
-  
-  result['Tiny Button'] = makeVoxels([-1,-1,-1],[1,2,2], function(i,j,k) {
-    if(i === 0) {
-      return (j === 0 && k === 0) ? 0xff0000 : 0;
-    }
-    return 1;
-  });
+
   
 
   result['Noise'] = makeVoxels([0,0,0], [16,16,16], function(i,j,k) {

@@ -69,13 +69,13 @@
 		var camera, cameraControl;
 		var geometry, surfacemesh, wiremesh, LineGeometryClass, axes;
 		var meshers = {
-		    'Stupid': StupidMesh
-		  , 'Culled': CulledMesh
-		  , 'Greedy': GreedyMesh
-		  , 'Greedy X': GreedyX
-		  , 'Greedy Y': GreedyY
-		  , 'Greedy Z': GreedyZ
-		  , 'Monotone': MonotoneMesh
+		    'Greedy X': GreedyX,
+		    'Greedy Y': GreedyY,
+		    'Greedy Z': GreedyZ,
+		    'Stupid': StupidMesh,
+		    'Culled': CulledMesh,
+		    'Greedy': GreedyMesh,
+		    'Monotone': MonotoneMesh,
 		};
 		var testdata = {};
 		
@@ -179,10 +179,11 @@
       
        //Create surface mesh
 			var material	= new THREE.MeshPhysicalMaterial({
-		    	vertexColors: true
+		    	vertexColors: true,
+				side: THREE.DoubleSide,
 			});
 			surfacemesh	= new THREE.Mesh( geometry, material );
-			surfacemesh.doubleSided = false;
+			// surfacemesh.doubleSided = false;
 			// var wirematerial = new THREE.MeshBasicMaterial({
 			//     color : 0xffffff
 			//   , wireframe : true
