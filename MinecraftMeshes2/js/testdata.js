@@ -34,6 +34,13 @@ function createTestData() {
     return 1;
   });
 
+  result['Peg'] = makeVoxels([-1,-1,-1],[2,2,2], function(i,j,k) {
+    if(j === 0 && k === 0) {
+      return i >= 0 ? 0xff0000 : 0;
+    }
+    return i < 1 ? 1 : 0;
+  });
+
   result['Debug 0.9'] = {
     voxels : [
       0,0,0,0,1,
