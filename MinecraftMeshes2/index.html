@@ -129,6 +129,12 @@
 			normals.push(1, 1, 1 );
           	normals.push(1, 1, 1 );
 			LineGeometryClass = THREE.EdgesGeometry
+			dots.push(
+				q[0], q[1], q[1],
+				q[2], q[2], q[1],
+				q[2], q[3], q[3],
+				q[0], q[0], q[3],
+				)
     //       geometry.faces.push(f);
         } else if(q.length == 4) {
 			indices.push(q[0], q[1], q[2])
@@ -142,6 +148,12 @@
 
 			normals.push(1, 1, 1 );
 			LineGeometryClass = THREE.WireframeGeometry
+			dots.push(
+				q[0], q[1], q[1],
+				q[2], q[2], q[1],
+				q[0], q[2], q[2],
+			)
+
     //       geometry.faces.push(f);
         }
       }
@@ -180,7 +192,7 @@
        //Create surface mesh
 			var material	= new THREE.MeshPhysicalMaterial({
 		    	vertexColors: true,
-				side: THREE.DoubleSide,
+				// side: THREE.DoubleSide,
 			});
 			surfacemesh	= new THREE.Mesh( geometry, material );
 			// surfacemesh.doubleSided = false;
@@ -191,8 +203,12 @@
 	// 		wiremesh = new THREE.Mesh(geometry, wirematerial);
 			// var egeo = new THREE.EdgesGeometry( geometry ); 
 			// var egeo = new THREE.WireframeGeometry( geometry );
-			var egeo = new LineGeometryClass( geometry );
-			var edgeMaterial = new THREE.LineBasicMaterial( { color: 0xffffff, /*transparent: true, opacity: 0.5,*/ linewidth:2 } );
+			// var egeo = new LineGeometryClass( geometry );
+			const egeo = new THREE.BufferGeometry();
+			egeo.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+			egeo.setIndex(dots)
+
+			var edgeMaterial = new THREE.LineBasicMaterial( { color: 0xffffff, /*transparent: true, opacity: 0.5,*/ linewidth: 1.5 } );
         	wiremesh = new THREE.LineSegments(egeo, edgeMaterial);
 	// 		wiremesh.doubleSided = true;
 			
@@ -242,8 +258,10 @@
 			// create a scene
 			scene = new THREE.Scene();
 			scene.background = new THREE.Color(0xBBBBBB)
+			// scene.background = new THREE.Color(0x111111)
+			scene.fog = new THREE.Fog( 0x111111 )//, 150, 200 );
 
-			const amlight = new THREE.AmbientLight( 0xffffff, 2.6 );
+			const amlight = new THREE.AmbientLight( 0xffffff, 2.0 );
         	scene.add( amlight );
 
 			// put a camera in the scene
@@ -325,7 +343,7 @@
 			// cameraControl.update();
 
       surfacemesh.visible = document.getElementById("showfacets").checked;
-    //   wiremesh.visible = document.getElementById("showedges").checked;
+      wiremesh.visible = document.getElementById("showedges").checked;
 
 			// actually render the scene
 			renderer.render( scene, camera );
