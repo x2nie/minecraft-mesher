@@ -30,7 +30,7 @@ return function(volume, dims) {
     return volume[i + dims[0] * (j + dims[1] * k)];
   }
   //Sweep over 3-axes
-  var vertices = [], faces = [];
+  var vertices = [], faces = [], normals = [];
   for(var d=0; d<3; ++d) {
     var i, j, k, l, w, h
       , u = (d+1)%3
@@ -83,14 +83,17 @@ return function(volume, dims) {
           //Add quad
           x[u] = i;  x[v] = j;
           var du = [0,0,0]
-            , dv = [0,0,0]; 
+            , dv = [0,0,0]
+            , o = [0,0,0]; 
           if(c > 0) {
             dv[v] = h;
             du[u] = w;
+            o[d] = 1;
           } else {
             c = -c;
             du[v] = h;
             dv[u] = w;
+            o[d] = -1;
           }
           var vertex_count = vertices.length;
           vertices.push([x[0],             x[1],             x[2]            ]);
@@ -112,7 +115,7 @@ return function(volume, dims) {
       }
     }
   }
-  return { vertices:vertices, faces:faces };
+  return { vertices:vertices, faces:faces, normals };
 }
 })();
 

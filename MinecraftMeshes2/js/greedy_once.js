@@ -74,7 +74,8 @@ function Greedy(volume, dims, start, finish) {
     const xyz = 'XYZ'
     //Sweep over 3-axes
     var vertices = [],
-        faces = [];
+        faces = [],
+        normals = [];
     for (var d = start; d < finish; ++d) {
         var i, j, k, l, w, h, 
             u = (d + 1) % 3,
@@ -135,14 +136,17 @@ function Greedy(volume, dims, start, finish) {
                         x[u] = i;
                         x[v] = j;
                         var du = [0, 0, 0],
-                            dv = [0, 0, 0];
+                            dv = [0, 0, 0],
+                            o = [0, 0, 0];
                         if (c > 0) {
                             dv[v] = h;
                             du[u] = w;
+                            o[d] = 1;
                         } else {
                             c = -c;
                             du[v] = h;
                             dv[u] = w;
+                            o[d] = -1;
                         }
                         console.log(` du = [ ${du[0]}, ${du[1]}, ${du[2]} ]`)
                         console.log(` dv = [ ${dv[0]}, ${dv[1]}, ${dv[2]} ]`)
@@ -161,6 +165,11 @@ function Greedy(volume, dims, start, finish) {
                         vertices.push(...tvertices)
                         faces.push([vertex_count, vertex_count + 1, vertex_count + 2, vertex_count + 3, c]);
 
+                        normals.push(o)
+                        // normal.push(o)
+                        // normal.push(o)
+                        // normal.push(o)
+
                         //? Zero-out mask. it guarantee that each voxel is scanned only once.
                         for     (l = 0; l < h; ++l)
                             for (k = 0; k < w; ++k) {
@@ -178,7 +187,8 @@ function Greedy(volume, dims, start, finish) {
     }
     return {
         vertices,
-        faces
+        faces,
+        normals
     };
 }
 

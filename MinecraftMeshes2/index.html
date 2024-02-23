@@ -80,11 +80,12 @@
 		var testdata = {};
 		
 		const rgb = (color) => {
+			color = ~~color
             const r = (color & 0xff0000) >> 16
             const g = (color & 0x00ff00) >> 8
             const b =  color & 0x0000ff 
-            return [r, g, b]
-            // return [r/255, g/255, b/255]
+            // return [r, g, b]
+            return [r/255, g/255, b/255]
         }
 		
 		function updateMesh() {
@@ -125,9 +126,17 @@
             pcolors.push(...c)
             pcolors.push(...c)
             pcolors.push(...c)
+			var normal
 
-			normals.push(1, 1, 1 );
-          	normals.push(1, 1, 1 );
+			if(result.normals){
+				normal = result.normals[i]
+			} else {
+				normal = [1,1,1]
+			}
+			normals.push(...normal);
+			normals.push(...normal);
+			// normals.push(1, 1, 1 );
+          	// normals.push(1, 1, 1 );
 			LineGeometryClass = THREE.EdgesGeometry
 			dots.push(
 				q[0], q[1], q[1],
@@ -191,7 +200,11 @@
       
        //Create surface mesh
 			var material	= new THREE.MeshPhysicalMaterial({
+				color: 0xffffff,
 		    	vertexColors: true,
+				roughness: 0.25,
+				metalness: 0,
+				reflectivity: 0.5
 				// side: THREE.DoubleSide,
 			});
 			surfacemesh	= new THREE.Mesh( geometry, material );
@@ -208,7 +221,7 @@
 			egeo.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
 			egeo.setIndex(dots)
 
-			var edgeMaterial = new THREE.LineBasicMaterial( { color: 0xffffff, /*transparent: true, opacity: 0.5,*/ linewidth: 3 } );
+			var edgeMaterial = new THREE.LineBasicMaterial( { color: 0xffffff, /*transparent: true, opacity: 0.5,*/ linewidth: 5 } );
         	wiremesh = new THREE.LineSegments(egeo, edgeMaterial);
 	// 		wiremesh.doubleSided = true;
 			
@@ -261,7 +274,7 @@
 			// scene.background = new THREE.Color(0x111111)
 			scene.fog = new THREE.Fog( 0x111111 )//, 150, 200 );
 
-			const amlight = new THREE.AmbientLight( 0xffffff, 2.0 );
+			const amlight = new THREE.AmbientLight( 0xffffff, 4.0 );
         	scene.add( amlight );
 
 			// put a camera in the scene
